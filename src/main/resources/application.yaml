@@ -1,3 +1,41 @@
 spring:
   application:
     name: phylx
+  datasource:
+    url: jdbc:postgresql://localhost:5432/phylx
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        "[format_sql]": true
+    show-sql: true
+
+  security:
+    user:
+      name: admin
+      password: password
+      roles: ADMIN
+
+  flyway:
+    enabled: true
+
+jwt:
+  secret: R7nRzQbO1I3v6p8E5F6Jxj2vNw0eLk8ZpT9QmYcVwRs=
+
+logging:
+  level:
+    "[org.springframework.security]": DEBUG
+  # datasource:
+  #   url: jdbc:h2:mem:testdb
+  #   driver-class-name: org.h2.Driver
+  #   username: sa
+  #   password:
+
+  # jpa:
+  #   hibernate:
+  #     ddl-auto: update
+  #   show-sql: true
