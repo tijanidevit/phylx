@@ -15,7 +15,6 @@ import com.tijanidevit.phylx.common.security.JwtService;
 import com.tijanidevit.phylx.user.entity.User;
 import com.tijanidevit.phylx.user.enums.Role;
 import com.tijanidevit.phylx.user.repository.UserRepository;
-import com.tijanidevit.phylx.user.response.UserResponse;
 
 import lombok.RequiredArgsConstructor;
 
