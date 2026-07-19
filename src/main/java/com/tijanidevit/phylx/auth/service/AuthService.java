@@ -1,5 +1,7 @@
 package com.tijanidevit.phylx.auth.service;
 
+import com.tijanidevit.phylx.common.mapper.UserMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,10 +10,12 @@ import org.springframework.stereotype.Service;
 import com.tijanidevit.phylx.auth.request.LoginRequest;
 import com.tijanidevit.phylx.auth.request.RegisterRequest;
 import com.tijanidevit.phylx.auth.response.AuthResponse;
+import com.tijanidevit.phylx.common.exception.BusinessRuleException;
 import com.tijanidevit.phylx.common.security.JwtService;
 import com.tijanidevit.phylx.user.entity.User;
 import com.tijanidevit.phylx.user.enums.Role;
 import com.tijanidevit.phylx.user.repository.UserRepository;
+import com.tijanidevit.phylx.user.response.UserResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,12 +23,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
     
     public AuthResponse register(RegisterRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessRuleException(
+                    "A user with this email address already exists.",
+                    HttpStatus.CONFLICT
+            );
+        }
         
         var user = User.builder()
                         .email(request.getEmail())
@@ -33,29 +46,26 @@ public class AuthService {
                         .role(Role.USER)
                         .build();
         userRepository.save(user);
-
-        var jwtToken = jwtService.generateToken(user);
-        
-        return AuthResponse.builder()
-            .token(jwtToken)
-            .build();
+        return buildResponse(user);
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
+        var authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(),
                 request.getPassword()
             )
         );
-        
-        var user = userRepository.findByEmail(request.getEmail())
-                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        var jwtToken = jwtService.generateToken(user);
-        
+        var user = (User) authentication.getPrincipal();
+        return buildResponse(user);
+    }
+
+
+    private AuthResponse buildResponse(User user) {
         return AuthResponse.builder()
-            .token(jwtToken)
-            .build();
+                .token(jwtService.generateToken(user))
+                .user(userMapper.toResponse(user))
+                .build();
     }
 }

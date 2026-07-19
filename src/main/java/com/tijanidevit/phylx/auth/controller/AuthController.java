@@ -7,7 +7,10 @@ import com.tijanidevit.phylx.auth.request.LoginRequest;
 import com.tijanidevit.phylx.auth.request.RegisterRequest;
 import com.tijanidevit.phylx.auth.response.AuthResponse;
 import com.tijanidevit.phylx.auth.service.AuthService;
+import com.tijanidevit.phylx.common.controller.BaseController;
+import com.tijanidevit.phylx.common.response.ApiResponse;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -19,22 +22,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 
-public class AuthController {
+public class AuthController extends BaseController{
 
 
     private final AuthService authService;
     
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
         
-        return ResponseEntity.ok(authService.register(request));
+        return created("User registered successfully", authService.register(request));
     }
     
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        
-        System.out.println("LOGIN ENDPOINT HIT");
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        return success("Login successful", authService.login(request));
     }
     
 }
