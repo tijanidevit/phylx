@@ -24,12 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public class AuthController extends BaseController{
 
-
     private final AuthService authService;
     
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        
         return created("User registered successfully", authService.register(request));
     }
     

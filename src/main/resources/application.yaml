@@ -22,6 +22,19 @@ spring:
 
   flyway:
     enabled: true
+  
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 085fb4aac82278
+    password: 43ff43021686ce
+    protocol: smtp
+    properties:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+
 
 jwt:
   secret: R7nRzQbO1I3v6p8E5F6Jxj2vNw0eLk8ZpT9QmYcVwRs=
